@@ -24,7 +24,7 @@ fn main() {
 }
 
 fn measure_access_pattern(pointer_chasing: bool) -> Vec<(String, f64, usize)> {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let mut results = Vec::new();
     let test_sizes = [
         ("L1", L1_SIZE / 2),
@@ -35,7 +35,7 @@ fn measure_access_pattern(pointer_chasing: bool) -> Vec<(String, f64, usize)> {
         ("RAM", L3_SIZE * 2),
     ];
 
-    for (label, size) in test_sizes {
+    test_sizes.into_iter().for_each(|(label, size)| {
         println!("Testing {} ({} bytes) with {}...",
             label, size,
             if pointer_chasing { "pointer chasing" } else { "sequential" }
@@ -49,27 +49,27 @@ fn measure_access_pattern(pointer_chasing: bool) -> Vec<(String, f64, usize)> {
         };
 
         // Warm up
-        for i in 0..size {
+        (0..size).for_each(|i| {
             buffer[i] = (i % 256) as u8;
-        }
+        });
         std::hint::black_box(&buffer);
 
-        for _ in 0..WARMUP_RUNS {
+        (0..WARMUP_RUNS).for_each(|_| {
             run_benchmark(&buffer, &pattern, pointer_chasing);
-        }
+        });
 
         let mut total = Duration::ZERO;
-        for _ in 0..MEASUREMENT_RUNS {
+        (0..MEASUREMENT_RUNS).for_each(|_| {
             let start = Instant::now();
             run_benchmark(&buffer, &pattern, pointer_chasing);
             total += start.elapsed();
-        }
+        });
 
         let avg_ns = total.as_nanos() as f64 / (MEASUREMENT_RUNS * ACCESSES_PER_RUN) as f64;
         let allocated_bytes = buffer.capacity();
         results.push((label.to_string(), avg_ns, allocated_bytes));
-        println!("  Avg latency: {:.2} ns, Allocated: {} bytes", avg_ns, allocated_bytes);
-    }
+        println!("  Avg latency: {avg_ns:.2} ns, Allocated: {allocated_bytes} bytes");
+    });
     results
 }
 
@@ -110,6 +110,6 @@ fn save_combined_data(path: &str, pc: &[(String, f64, usize)], seq: &[(String, f
     for ((pc_lvl, pc, pc_bytes), (seq_lvl, seq, seq_bytes)) in pc.iter().zip(seq.iter()) {
         assert_eq!(pc_lvl, seq_lvl);
         assert_eq!(pc_bytes, seq_bytes);
-        writeln!(file, "{},{},{},{}", pc_lvl, pc, seq, pc_bytes).unwrap();
+        writeln!(file, "{pc_lvl},{pc},{seq},{pc_bytes}").unwrap();
     }
 }
