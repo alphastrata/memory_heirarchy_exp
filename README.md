@@ -9,12 +9,13 @@ Open [results/memory_hierarchy_interactive.html](results/memory_hierarchy_intera
 
 | Level    | Size (MB) | Pointer Chasing (ns) | Serial (ns) | % Increase vs L1 |
 |----------|-----------|----------------------|-------------|------------------|
-| L1       |   0.03    | 1.43                 | 1.31        |      0.0%         |
-| L1-L2    |   0.09    | 1.66                 | 1.30        |     16.3%         |
-| L2       |   0.25    | 2.45                 | 1.30        |     71.4%         |
-| L2-L3    |   0.75    | 3.52                 | 1.29        |    147.0%         |
-| L3       |  32.00    | 16.81                 | 2.73        |   1077.8%         |
-| RAM      | 128.00    | 52.18                 | 3.72        |   3555.8%         |
+| L1       |   0.03    | 1.41                 | 1.57        |      0.0%         |
+| L1-L2    |   0.09    | 1.67                 | 1.41        |     18.6%         |
+| L2       |   0.25    | 2.50                 | 1.40        |     77.0%         |
+| L2-L3    |   0.75    | 3.82                 | 1.42        |    171.1%         |
+| L3       |  32.00    | 14.38                 | 2.34        |    919.6%         |
+| RAM      | 128.00    | 40.20                 | 2.83        |   2751.1%         |
+
 
 
 
@@ -52,9 +53,9 @@ Open [results/memory_hierarchy_interactive.html](results/memory_hierarchy_intera
 cargo run --release
 
 # Create visualizations
-uv run chasing-vs-serial-across-cache.py
+uv run plot.py
 # or if you're scrub
-python chasing-vs-serial-across-cache.py 
+python plot.py 
  ```
 
 ## Requirements
