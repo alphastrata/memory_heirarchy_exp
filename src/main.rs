@@ -3,9 +3,11 @@ use rand::prelude::*;
 use std::fs::File;
 use std::io::Write;
 
-const L1_SIZE: usize = 64 * 1024;
-const L2_SIZE: usize = 512 * 1024;
-const L3_SIZE: usize = 64 * 1024 * 1024;
+
+// Using my machine's AMD 5950x' values, you should put yours here to help get a good 'tune'
+const L1_SIZE: usize = 64 * 1024; // 64 KB
+const L2_SIZE: usize = 512 * 1024; // 512 KB
+const L3_SIZE: usize = 64 * 1024 * 1024; // 64 MB
 const WARMUP_RUNS: usize = 3;
 const MEASUREMENT_RUNS: usize = 5;
 const ACCESSES_PER_RUN: usize = 10_000_000;
@@ -21,7 +23,7 @@ fn main() {
     println!("\nData saved to results/cache_data.csv");
 }
 
-fn measure_access_pattern(pointer_chasing: bool) -> Vec<(String, f64)> {
+fn measure_access_pattern(pointer_chasing: bool) -> Vec<(String, f64, usize)> {
     let mut rng = rand::thread_rng();
     let mut results = Vec::new();
     let test_sizes = [
@@ -64,8 +66,9 @@ fn measure_access_pattern(pointer_chasing: bool) -> Vec<(String, f64)> {
         }
 
         let avg_ns = total.as_nanos() as f64 / (MEASUREMENT_RUNS * ACCESSES_PER_RUN) as f64;
-        results.push((label.to_string(), avg_ns));
-        println!("  Avg latency: {:.2} ns", avg_ns);
+        let allocated_bytes = buffer.capacity();
+        results.push((label.to_string(), avg_ns, allocated_bytes));
+        println!("  Avg latency: {:.2} ns, Allocated: {} bytes", avg_ns, allocated_bytes);
     }
     results
 }
@@ -101,11 +104,12 @@ fn create_sequential_pattern(size: usize) -> Vec<usize> {
     (0..size / CACHE_LINE_SIZE).collect()
 }
 
-fn save_combined_data(path: &str, pc: &[(String, f64)], seq: &[(String, f64)]) {
+fn save_combined_data(path: &str, pc: &[(String, f64, usize)], seq: &[(String, f64, usize)]) {
     let mut file = File::create(path).unwrap();
-    writeln!(file, "cache_level,pointer_chasing_ns,serial_ns").unwrap();
-    for ((pc_lvl, pc), (seq_lvl, seq)) in pc.iter().zip(seq.iter()) {
+    writeln!(file, "cache_level,pointer_chasing_ns,serial_ns,allocated_bytes").unwrap();
+    for ((pc_lvl, pc, pc_bytes), (seq_lvl, seq, seq_bytes)) in pc.iter().zip(seq.iter()) {
         assert_eq!(pc_lvl, seq_lvl);
-        writeln!(file, "{},{},{}", pc_lvl, pc, seq).unwrap();
+        assert_eq!(pc_bytes, seq_bytes);
+        writeln!(file, "{},{},{},{}", pc_lvl, pc, seq, pc_bytes).unwrap();
     }
 }

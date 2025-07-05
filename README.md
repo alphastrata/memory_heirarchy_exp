@@ -2,20 +2,26 @@
 
 ## Visualizations
 
-### Static Analysis
-![Memory Hierarchy Analysis](results/memory_hierarchy_analysis.png)
-
 ### Interactive Plot
 Open [results/memory_hierarchy_interactive.html](results/memory_hierarchy_interactive.html) in your browser for interactive exploration.
 
-## Detected Memory Hierarchy
+## Detected Memory Hierarchy (Measured)
 
-| Level | Size Range | Avg Latency | Performance |
-|-------|------------|-------------|-------------|
-| L1 Cache | 0.0 MB - 7.3 MB | 13.5 ns | 🟡 Good |
-| L2 Cache | 7.3 MB - 11.0 MB | 15.2 ns | 🟡 Good |
-| L3 Cache | 11.0 MB - 16.4 MB | 18.2 ns | 🟡 Good |
-| Main Memory | 16.4 MB - 187.3 MB | 85.2 ns | 🟠 Moderate |
+| Level    | Size (MB) | Pointer Chasing (ns) | Serial (ns) | % Increase vs L1 |
+|----------|-----------|----------------------|-------------|------------------|
+| L1       |   0.03    | 1.43                 | 1.31        |      0.0%         |
+| L1-L2    |   0.09    | 1.66                 | 1.30        |     16.3%         |
+| L2       |   0.25    | 2.45                 | 1.30        |     71.4%         |
+| L2-L3    |   0.75    | 3.52                 | 1.29        |    147.0%         |
+| L3       |  32.00    | 16.81                 | 2.73        |   1077.8%         |
+| RAM      | 128.00    | 52.18                 | 3.72        |   3555.8%         |
+
+
+
+### Plots
+
+- ![Cache Comparison](results/cache_comparison_all.png)
+- [Interactive Plot (HTML)](results/cache_comparison_all.html)
 
 ## Key Insights
 
@@ -46,8 +52,10 @@ Open [results/memory_hierarchy_interactive.html](results/memory_hierarchy_intera
 cargo run --release
 
 # Create visualizations
-python visualize.py
-```
+uv run chasing-vs-serial-across-cache.py
+# or if you're scrub
+python chasing-vs-serial-across-cache.py 
+ ```
 
 ## Requirements
 
