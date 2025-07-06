@@ -1,6 +1,23 @@
-# Memory Hierarchy Visualization
+# Gauntlet
 
+This is becoming a collection of micro-benchmarking tools that can increase system load on Memory, Caches, CPU etc in order to give you PRACTICAL advise for programming against them.
+
+
+# TODOS:
+- [] hit all todos
+- [] stdout options, `json` `stdout(default)` `csv` `jsonl`
+- [] Support a ConfigFile
+- [] ConfigFile should support connecting to a database to keep results long lived.
+- [] Actual schemas for Memory, Cache, Cpu, GPU etc.
+- [] timestamps for runs
+- [] gatherable HW info? should this be a thing or is it more fun without it?
+- [] 'in human speak' options to translate things from the HW to the Benefit tangibly available to the user.
+
+
+
+# ============ OLD =============
 ## Visualizations
+
 
 ### Interactive Plot
 Open [results/memory_hierarchy_interactive.html](results/memory_hierarchy_interactive.html) in your browser for interactive exploration.
